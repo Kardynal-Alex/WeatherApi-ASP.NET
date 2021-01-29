@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WeatherApi.Models.WeatherModel
 {
     public class CityInfo
     {
+        [JsonProperty("id")]
+        public int CItyId { get; set; }
+
         [JsonProperty("name")]
         public string CityName { get; set; }
 

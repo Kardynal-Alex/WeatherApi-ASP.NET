@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.IO;
 using WeatherApi.Models.WeatherModel;
+using WeatherApi.Models.Charts;
 namespace WeatherApi.Controllers
 {
     public class HomeController : Controller
@@ -27,11 +28,16 @@ namespace WeatherApi.Controllers
                 response = streamReader.ReadToEnd();
             }
         }
-        
         public IActionResult Index()
         {
-            OpenWeatherMapResponse json = JsonConvert.DeserializeObject<OpenWeatherMapResponse>(response);
-            return View();
+            OpenWeatherMapResponse WeatherInfo = JsonConvert.DeserializeObject<OpenWeatherMapResponse>(response);
+            List<DataPoint> dataPoints = new List<DataPoint>();
+            foreach (var item in WeatherInfo.WeatherList.Skip(0).Take(8))
+            {
+                dataPoints.Add(new DataPoint(item.DateTime.ToString("HH:mm"), item.TemperatureInfo.Temperature));
+            }
+            ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
+            return View(WeatherInfo);
         }
 
         public IActionResult Privacy()

@@ -1,8 +1,93 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model WeatherApi.Models.WeatherModel.OpenWeatherMapResponse
+@using WeatherApi.Models.WeatherModel
+@using System.Globalization
+@{
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WeatherApi</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="col">
+        <div class="text-left">
+            <h4>@DateTime.Now.ToString("HH:mm tt, MMMM dd", new CultureInfo("en-Us"))</h4>
+            <h4>@Model.City.CityName, @Model.City.Country</h4>
+            <h4>@string.Format("{0}°C", Model.WeatherList[0].TemperatureInfo.Temperature)</h4>
+            <h5>
+                Feels like @string.Format("{0}°C", Model.WeatherList[0].TemperatureInfo.FeelsLikeTemp).
+                @Model.WeatherList[0].WeatherDescription[0].FullDescription
+            </h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+            <div class="row">
+                <pre>          </pre>
+                @foreach (var item in Model.WeatherList.Take(8))
+                {
+                    <div class="col p-lg-2">
+                        <div><font size="2">@item.WeatherDescription[0].FullDescription</font></div>
+                        <div><font size="2">@item.WindInfo.Speed m/s</font></div>
+                    </div>
+                    <pre>   </pre>
+                }
+            </div>
+        </div>
+        <div class="col p-sm-1">
+            <div id="openweathermap-widget-11"></div>
+            <script src='//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/d3.min.js'></script>
+            <script>window.myWidgetParam ? window.myWidgetParam : window.myWidgetParam = [];
+                window.myWidgetParam.push({ id: 11, cityid: '@Model.City.CItyId', appid: '43e0253ee3a7eab5c16608b1217424dd', units: 'metric', containerid: 'openweathermap-widget-11', });
+                (function () {
+                    var script = document.createElement('script');
+                    script.async = true;
+                    script.charset = "utf-8";
+                    script.src = "//openweathermap.org/themes/openweathermap/assets/vendor/owm/js/weather-widget-generator.js";
+                    var s = document.getElementsByTagName('script')[0];
+                    s.parentNode.insertBefore(script, s);
+                })();
+            </script>
+            <div class="text-center">
+                <h4>5-day forecast</h4>
+            </div>
+        </div>
+    </div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<script>
+    window.onload = function () {
+
+		var chart = new CanvasJS.Chart("chartContainer", {
+			animationEnabled: true,
+			title: {
+				text: "Hourly forecast"
+            },
+            axisY: {
+                includeZero: true,
+                suffix: " °C"
+            },
+			toolTip: {
+				shared: true
+			},
+			data: [{
+				type: "line",
+                indexLabel: "{y}°C",
+				showInLegend: false,
+				dataPoints: @Html.Raw(ViewBag.DataPoints)}]
+		});
+		chart.render();
+		}
+</script>
