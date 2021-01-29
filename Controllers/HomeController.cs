@@ -9,6 +9,7 @@ using WeatherApi.Models;
 using Newtonsoft.Json;
 using System.Net;
 using System.IO;
+using WeatherApi.Models.WeatherModel;
 namespace WeatherApi.Controllers
 {
     public class HomeController : Controller
@@ -29,6 +30,7 @@ namespace WeatherApi.Controllers
         
         public IActionResult Index()
         {
+            OpenWeatherMapResponse json = JsonConvert.DeserializeObject<OpenWeatherMapResponse>(response);
             return View();
         }
 
@@ -36,6 +38,5 @@ namespace WeatherApi.Controllers
         {
             return View();
         }
-
     }
 }
