@@ -11,12 +11,14 @@ using System.Net;
 using System.IO;
 using WeatherApi.Models.WeatherModel;
 using WeatherApi.Models.Charts;
+using WeatherApi.Models.WeatherModel7Days;
 namespace WeatherApi.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         public string response;
+        public string sevenDaysResponse;
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -26,6 +28,13 @@ namespace WeatherApi.Controllers
             using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream())) 
             {
                 response = streamReader.ReadToEnd();
+            }
+            string sevenDaysUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=50.4333&lon=30.5167&exclude=current,minutely,hourly,alerts&units=metric&appid=43e0253ee3a7eab5c16608b1217424dd";
+            httpWebRequest = (HttpWebRequest)WebRequest.Create(sevenDaysUrl);
+            httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
+            {
+                sevenDaysResponse = streamReader.ReadToEnd();
             }
         }
         public IActionResult Index()
@@ -37,7 +46,13 @@ namespace WeatherApi.Controllers
                 dataPoints.Add(new DataPoint(item.DateTime.ToString("HH:mm"), item.TemperatureInfo.Temperature));
             }
             ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
-            return View(WeatherInfo);
+            OpenWeather7Days WeatherInfo7Days = JsonConvert.DeserializeObject<OpenWeather7Days>(sevenDaysResponse);
+
+            return View(new GeneralWeatherModel
+            {
+                OpenWeatherMapResponse = WeatherInfo,
+                OpenWeather7Days = WeatherInfo7Days
+            });
         }
 
         public IActionResult Privacy()
