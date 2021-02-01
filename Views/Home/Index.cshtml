@@ -1,5 +1,4 @@
 ﻿@model WeatherApi.Models.GeneralWeatherModel
-@using WeatherApi.Models.WeatherModel
 @using System.Globalization
 @{
     Layout = null;
@@ -27,8 +26,16 @@
     </div>
     <div class="row">
         <div class="col">
-            <div id="chartContainer" style="height: 370px; width: 100%;"></div>
-            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+            <div class="tab">
+                <button class="tablinks" onclick="openChart(event, 'Temperature')">Temperature</button>
+                <button class="tablinks" onclick="openChart(event, 'Humidity')">Humidity</button>
+            </div> 
+            <div id="Temperature" class="tabcontent">
+                @await Html.PartialAsync("TempChart")
+            </div>
+            <div id="Humidity" class="tabcontent" style="display:none;">
+                @await Html.PartialAsync("HumidityChart")
+            </div>
             <div class="row">
                 <pre>          </pre>
                 @foreach (var item in Model.OpenWeatherMapResponse.WeatherList.Take(8))
@@ -54,28 +61,45 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>
-
 <script>
-    window.onload = function () {
-
-		var chart = new CanvasJS.Chart("chartContainer", {
-			animationEnabled: true,
-			title: {
-				text: "3-Hourly forecast"
-            },
-            axisY: {
-                includeZero: true,
-                suffix: " °C"
-            },
-			toolTip: {
-				shared: true
-			},
-			data: [{
-				type: "line",
-                indexLabel: "{y}°C",
-				showInLegend: false,
-				dataPoints: @Html.Raw(ViewBag.DataPoints)}]
-		});
-		chart.render();
-		}
+    function openChart(evt, options) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(options).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
 </script>
+<style>
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+            .tab button:hover {
+                background-color: #ddd;
+            }    
+            .tab button.active {
+                background-color: #ccc;
+            }
+    .tabcontent {
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+</style>

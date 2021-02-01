@@ -1,0 +1,44 @@
+﻿<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+    window.onload = function () {
+		var chart = new CanvasJS.Chart("chartContainer", {
+			animationEnabled: true,
+			title: {
+				text: "3-Hourly forecast"
+            },
+            axisY: {
+                includeZero: true,
+                suffix: " °C"
+            },
+			toolTip: {
+				shared: true
+			},
+			data: [{
+				type: "line",
+                indexLabel: "{y}°C",
+				showInLegend: false,
+				dataPoints: @Html.Raw(ViewBag.DataPoints)}]
+		});
+		var chart1 = new CanvasJS.Chart("chartContainer1", {
+			animationEnabled: true,
+			title: {
+				text: "Humidity"
+            },
+            axisY: {
+                includeZero: true,
+                suffix: " %"
+            },
+			toolTip: {
+				shared: true
+			},
+			data: [{
+				type: "line",
+                indexLabel: "{y}%",
+				showInLegend: false,
+				dataPoints: @Html.Raw(ViewBag.DataPoints1)}]
+		});
+		chart.render();
+        chart1.render();
+		}
+</script>

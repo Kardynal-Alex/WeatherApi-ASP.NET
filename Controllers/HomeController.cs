@@ -41,11 +41,14 @@ namespace WeatherApi.Controllers
         {
             OpenWeatherMapResponse WeatherInfo = JsonConvert.DeserializeObject<OpenWeatherMapResponse>(response);
             List<DataPoint> dataPoints = new List<DataPoint>();
+            List<DataPoint1> dataPoints1 = new List<DataPoint1>();
             foreach (var item in WeatherInfo.WeatherList.Skip(0).Take(8))
             {
                 dataPoints.Add(new DataPoint(item.DateTime.ToString("HH:mm"), item.TemperatureInfo.Temperature));
+                dataPoints1.Add(new DataPoint1(item.DateTime.ToString("HH:mm"), item.TemperatureInfo.Humidity));
             }
             ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
+            ViewBag.DataPoints1 = JsonConvert.SerializeObject(dataPoints1);
             OpenWeather7Days WeatherInfo7Days = JsonConvert.DeserializeObject<OpenWeather7Days>(sevenDaysResponse);
 
             return View(new GeneralWeatherModel
