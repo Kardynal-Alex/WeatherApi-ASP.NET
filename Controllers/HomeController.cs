@@ -22,24 +22,33 @@ namespace WeatherApi.Controllers
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            string url = "https://api.openweathermap.org/data/2.5/forecast?q=Kyiv&units=metric&appid=43e0253ee3a7eab5c16608b1217424dd";
+        }
+        private void GetWeatherInfo(string city)
+        {
+            string url = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=metric&appid=43e0253ee3a7eab5c16608b1217424dd";
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream())) 
+            using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
             {
                 response = streamReader.ReadToEnd();
             }
-            string sevenDaysUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=50.4333&lon=30.5167&exclude=current,minutely,hourly,alerts&units=metric&appid=43e0253ee3a7eab5c16608b1217424dd";
-            httpWebRequest = (HttpWebRequest)WebRequest.Create(sevenDaysUrl);
-            httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+        }
+        public void Get7DaysWeatherInfo(decimal lat, decimal lon)
+        {
+            string sevenDaysUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=current,minutely,hourly,alerts&units=metric&appid=43e0253ee3a7eab5c16608b1217424dd";
+            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(sevenDaysUrl);
+            HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
             using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
             {
                 sevenDaysResponse = streamReader.ReadToEnd();
             }
         }
-        public IActionResult Index()
+        public IActionResult Index(string city)
         {
+            city = city == null ? "Kyiv" : city;
+            GetWeatherInfo(city);
             OpenWeatherMapResponse WeatherInfo = JsonConvert.DeserializeObject<OpenWeatherMapResponse>(response);
+            Get7DaysWeatherInfo(WeatherInfo.City.Coordinates.Latitude, WeatherInfo.City.Coordinates.Longitude);
             List<DataPoint> dataPoints = new List<DataPoint>();
             List<DataPoint1> dataPoints1 = new List<DataPoint1>();
             foreach (var item in WeatherInfo.WeatherList.Skip(0).Take(8))
