@@ -2,6 +2,8 @@
 @using System.Globalization
 @{
     Layout = null;
+    var image = "http://openweathermap.org/img/wn/" + @Model.OpenWeatherMapResponse.WeatherList[0].WeatherDescription[0].Icon + "@2x.png";
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +17,10 @@
     <link rel="stylesheet" href="~/css/tab.css" />
 </head>
 <body>
+    @if (TempData["message"] != null)
+    {
+        <div class="alert alert-danger">@TempData["message"]</div>
+    }
     <div>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <form class="example" asp-action="Index" asp-controller="Home">
@@ -22,47 +28,57 @@
             <button type="submit"><i class="fa fa-search"></i></button>
         </form>
     </div>
-    <div class="col">
-        <div class="text-left">
-            <h4>@DateTime.Now.ToString("HH:mm tt, MMMM dd", new CultureInfo("en-Us"))</h4>
-            <h4>@Model.OpenWeatherMapResponse.City.CityName, @Model.OpenWeatherMapResponse.City.Country</h4>
-            <h4>@string.Format("{0}°C", Model.OpenWeatherMapResponse.WeatherList[0].TemperatureInfo.Temperature)</h4>
-            <h5>
-                Feels like @string.Format("{0}°C", Model.OpenWeatherMapResponse.WeatherList[0].TemperatureInfo.FeelsLikeTemp).
-                @Model.OpenWeatherMapResponse.WeatherList[0].WeatherDescription[0].FullDescription
-            </h5>
-        </div>
-    </div>
     <div class="row">
         <div class="col">
-            <div class="tab">
-                <button class="tablinks" onclick="openChart(event, 'Temperature')">Temperature</button>
-                <button class="tablinks" onclick="openChart(event, 'Humidity')">Humidity</button>
-            </div> 
-            <div id="Temperature" class="tabcontent">
-                @await Html.PartialAsync("TempChart")
-            </div>
-            <div id="Humidity" class="tabcontent" style="display:none;">
-                @await Html.PartialAsync("HumidityChart")
-            </div>
-            <div class="row">
-                <pre>          </pre>
-                @foreach (var item in Model.OpenWeatherMapResponse.WeatherList.Take(8))
-                {
-                    <div class="col p-lg-2">
-                        <div><font size="2">@item.WeatherDescription[0].FullDescription</font></div>
-                        <div><font size="2">@item.WindInfo.Speed m/s</font></div>
+            <div class="text-left">
+                <h4>@DateTime.Now.ToString("HH:mm tt, MMMM dd", new CultureInfo("en-Us"))</h4>
+                <h4>@Model.OpenWeatherMapResponse.City.CityName, @Model.OpenWeatherMapResponse.City.Country</h4>
+                <div class="row">
+                    <div className="weather-icon">
+                        <img style={{width:'60px'}} src="@image" />
                     </div>
-                    <pre>   </pre>
-                }
+                    <h4>
+                        <pre></pre>
+                        <font size="10">
+                            @string.Format("{0}°C", Model.OpenWeatherMapResponse.WeatherList[0].TemperatureInfo.Temperature)
+                        </font>
+                    </h4>
+                </div>
+                <h5>
+                    Feels like @string.Format("{0}°C", Model.OpenWeatherMapResponse.WeatherList[0].TemperatureInfo.FeelsLikeTemp).
+                    @Model.OpenWeatherMapResponse.WeatherList[0].WeatherDescription[0].FullDescription
+                </h5>
+                <div class="tab">
+                    <button class="tablinks" onclick="openChart(event, 'Temperature')">Temperature</button>
+                    <button class="tablinks" onclick="openChart(event, 'Humidity')">Humidity</button>
+                </div>
+                <div id="Temperature" class="tabcontent">
+                    @await Html.PartialAsync("TempChart")
+                </div>
+                <div id="Humidity" class="tabcontent" style="display:none;">
+                    @await Html.PartialAsync("HumidityChart")
+                </div>
+                <div class="row">
+                    <pre>          </pre>
+                    @foreach (var item in Model.OpenWeatherMapResponse.WeatherList.Take(8))
+                    {
+                        <div class="col p-lg-2">
+                            <div><font size="2">@item.WeatherDescription[0].FullDescription</font></div>
+                            <div><font size="2">@item.WindInfo.Speed m/s</font></div>
+                        </div>
+                        <pre>   </pre>
+                    }
+                </div>
             </div>
         </div>
-        <div class="col p-sm-1">
-            @await Html.PartialAsync("Widget")
-            <div>
-                <h4>5-day forecast</h4>
+        <div class="col">
+            <div class="col p-sm-1">
+                @await Html.PartialAsync("Widget")
+                <div>
+                    <h4>5-day forecast</h4>
+                </div>
+                @await Html.PartialAsync("SevenDaysView")
             </div>
-            @await Html.PartialAsync("SevenDaysView")
         </div>
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
