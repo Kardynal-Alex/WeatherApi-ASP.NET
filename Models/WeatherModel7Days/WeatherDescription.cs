@@ -9,5 +9,8 @@ namespace WeatherApi.Models.WeatherModel7Days
 
         [JsonProperty("description")]
         public string FullDescription { get; set; }
+
+        [JsonProperty("icon")]
+        public string Icon { get; set; }
     }
 }

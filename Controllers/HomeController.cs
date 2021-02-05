@@ -61,6 +61,7 @@ namespace WeatherApi.Controllers
                 ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
                 ViewBag.DataPoints1 = JsonConvert.SerializeObject(dataPoints1);
                 OpenWeather7Days WeatherInfo7Days = JsonConvert.DeserializeObject<OpenWeather7Days>(sevenDaysResponse);
+                //WeatherInfo7Days.DailyWeatherInfo[0].WeatherDescriptions[0].Icon
                 return View(new GeneralWeatherModel
                 {
                     OpenWeatherMapResponse = WeatherInfo,

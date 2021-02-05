@@ -3,7 +3,6 @@
     int n = 7;
     string image = "";
 }
-
 <div class="col">
     @for (int i = 0; i < n; i++)
     {
@@ -13,7 +12,7 @@
                     <input type="button" class="btn btn-dark" style="width:550px;text-align:left" 
                            value="@DateTime.Now.Date.AddDays(i).ToString("MMMM dd", new CultureInfo("en-Us"))
                                     @Model.OpenWeather7Days.DailyWeatherInfo[i].Temperature.MaxTemp / @Model.OpenWeather7Days.DailyWeatherInfo[i].Temperature.MinTemp°C @Model.OpenWeather7Days.DailyWeatherInfo[i].WeatherDescriptions[0].FullDescription">
-                    @{image = "http://openweathermap.org/img/wn/" + Model.OpenWeatherMapResponse.WeatherList[i].WeatherDescription[0].Icon + "@2x.png";}
+                    @{image = "http://openweathermap.org/img/wn/" + Model.OpenWeather7Days.DailyWeatherInfo[i].WeatherDescriptions[0].Icon + "@2x.png";}
                     <div>
                         <img style="width:65px" src="@image" />
                     </div>
